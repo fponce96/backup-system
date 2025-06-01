@@ -5,7 +5,7 @@
 
 ---
 
-## 🇦🇷 Descripción (Español, tono porteño informal pero profesional)
+## 🇦🇷 Descripción
 
 Este **backup-system** es un script en Bash que te hace la vida más fácil para hacer backups automáticos hacia un USB, con compresión zstd y cifrado GPG. Además tiene soporte para reglas udev (así se ejecuta cuando enchufás el USB), limpieza automática de backups viejos, restauración fácil, validación y actualización automática desde GitHub. 
 
@@ -13,7 +13,7 @@ Ideal para laburar tranqui y que tus datos estén seguros sin estar pendiente to
 
 ---
 
-## 🇬🇧 Description (English, professional tone)
+## 🇬🇧 Description
 
 **backup-system** is a Bash script designed to simplify automatic backups to USB devices, featuring zstd compression and GPG encryption. It supports udev rules for automatic triggering upon USB connection, automated old backup cleanup, easy restoration, integrity validation, and automatic updates from GitHub.
 
