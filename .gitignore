@@ -1,0 +1,9 @@
+# Claves públicas, privadas y firmas
+*.pub
+*.sig
+*.key
+*.asc
+
+# Backups
+/backups/
+/volumes/
