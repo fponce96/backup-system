@@ -1,171 +1,131 @@
+# 🛡️ backup-system
 
-# backup-system
+Sistema de backups automáticos hacia USB con compresión `zstd`, cifrado `GPG`, restauración, limpieza, validación y actualización desde GitHub. Hecho en Bash, simple pero poderoso.
 
-![backup-system](https://img.shields.io/badge/backup--system-v1.0-blue)
+![Logo Backup System](https://img.shields.io/badge/bash-script-blue.svg) ![License MIT](https://img.shields.io/badge/license-MIT-green.svg) ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
 ---
 
 ## 🇦🇷 Descripción
 
-Este **backup-system** es un script en Bash que te hace la vida más fácil para hacer backups automáticos hacia un USB, con compresión zstd y cifrado GPG. Además tiene soporte para reglas udev (así se ejecuta cuando enchufás el USB), limpieza automática de backups viejos, restauración fácil, validación y actualización automática desde GitHub. 
+Este script fue creado con el objetivo de simplificar los backups automáticos hacia un dispositivo USB. Funciona en cualquier distro Linux y permite:
 
-Ideal para laburar tranqui y que tus datos estén seguros sin estar pendiente todo el tiempo. Lo podés usar en cualquier GNU/Linux con bash, sin depender de interfaces gráficas, todo en línea de comandos. ¡Un golazo para los que bancan la consola!
+- 🔐 Cifrado automático con GPG (clave asimétrica).
+- 🗜️ Compresión eficiente con Zstandard.
+- 🔁 Restauración rápida desde USB.
+- 📦 Limpieza de backups viejos.
+- 🔔 Notificaciones opcionales con `notify-send`.
+- 🧩 Integración con reglas Udev para ejecución automática al conectar USB.
+- 🛠️ Autogeneración de llaves GPG si no existen.
+- 📤 Copia de clave pública al mismo directorio para restauración remota.
+- 🌐 Actualización desde GitHub.
 
 ---
 
-## 🇬🇧 Description
+## 🇺🇸 English Version
 
-**backup-system** is a Bash script designed to simplify automatic backups to USB devices, featuring zstd compression and GPG encryption. It supports udev rules for automatic triggering upon USB connection, automated old backup cleanup, easy restoration, integrity validation, and automatic updates from GitHub.
-
-Ideal for sysadmins or users preferring CLI tools to keep data securely backed up without manual intervention. Compatible with any GNU/Linux system with Bash, no GUI dependencies required.
+`backup-system` is a Bash script that automates backups to a USB device, compresses them using `zstd`, encrypts with `gpg`, and supports restore, cleanup, GitHub updates, and udev rules for automation.
 
 ---
 
-## 📥 Instalación
-
-1. Cloná el repositorio (o descargá el script directamente):
+## 📦 Instalación
 
 ```bash
 git clone https://github.com/tuusuario/backup-system.git
 cd backup-system
-```
-
-2. Instalá dependencias si no las tenés (se instalan automáticamente si el script tiene permisos):
-
-- `zstd`
-- `gpg`
-- `mount`
-- `udevadm`
-- `notify-send` (opcional para notificaciones de escritorio)
-
-3. Copiá el script al path para poder ejecutarlo fácil:
-
-```bash
 sudo cp backup-system.sh /usr/local/bin/backup-system.sh
 sudo chmod +x /usr/local/bin/backup-system.sh
 ```
 
 ---
 
-## ⚙️ Configuración y uso
+## 🛠️ Configuración
 
-### Parámetros principales
+1. **Clave GPG:** el script generará automáticamente una si no tenés una existente.
+2. **UUID:** conseguílo con `blkid` o `lsblk -f`.
+3. **Configuración udev:**
 
-| Parámetro       | Descripción                                                                                  |
-|-----------------|----------------------------------------------------------------------------------------------|
-| `-s`            | Setup: instala la regla udev para detectar el USB y lanzar el backup automáticamente.       |
-| `-b`            | Backup: realiza el backup manualmente.                                                      |
-| `-r`            | Restore: restaura un backup desde el USB.                                                   |
-| `-u UUID`       | UUID del dispositivo USB donde se hará el backup/restauración. Obligatorio para montaje.    |
-| `-m MOUNT_POINT`| Punto de montaje local del USB. Por defecto `/mnt/backup_usb`.                              |
-| `-n`            | Notificaciones desktop con notify-send.                                                     |
-| `--git-validate`| Valida que el script local esté actualizado con la versión de GitHub.                       |
-| `--git-update`  | Actualiza automáticamente el script desde GitHub.                                           |
-| `-h, --help`    | Muestra ayuda con uso y parámetros.                                                         |
+```bash
+sudo backup-system.sh -s -u TU_UUID -m /mnt/backup_usb -n
+```
+
+Esto crea una regla para ejecutar backup automáticamente al conectar el USB.
 
 ---
 
-### Ejemplos prácticos
+## 🚀 Uso
 
-#### Setup con regla udev para backups automáticos al enchufar el USB
-
-```bash
-sudo backup-system.sh -s -u 1234-ABCD -m /mnt/backup_usb -n
-```
-
-Esta orden configura el sistema para que cuando conectes el USB con UUID `1234-ABCD`, se monte automáticamente en `/mnt/backup_usb` y se lance el backup. Las notificaciones de escritorio estarán activas.
-
-#### Hacer un backup manual
+### Backup manual:
 
 ```bash
-backup-system.sh -b -u 1234-ABCD -m /mnt/backup_usb
+sudo backup-system.sh -b -u TU_UUID -m /mnt/backup_usb -n
 ```
 
-Esto monta el USB y crea un backup con compresión y cifrado.
-
-#### Restaurar un backup manualmente
+### Restauración:
 
 ```bash
-backup-system.sh -r -u 1234-ABCD -m /mnt/backup_usb
+sudo backup-system.sh -r -u TU_UUID -m /mnt/backup_usb -n
 ```
 
-Monta el USB y restaura el último backup disponible.
-
-#### Validar actualización del script
+### Setup udev:
 
 ```bash
-backup-system.sh --git-validate
+sudo backup-system.sh -s -u TU_UUID -m /mnt/backup_usb
 ```
-
-Chequea si el script local está actualizado con la versión en GitHub.
-
-#### Actualizar el script desde GitHub
-
-```bash
-sudo backup-system.sh --git-update
-```
-
-Descarga la última versión y reemplaza el script local.
 
 ---
 
-## 🔍 Detalles técnicos importantes
+## 🧾 Parámetros
 
-- El script monta el USB automáticamente con el UUID indicado.
-- Usa `zstd` para comprimir los backups y ahorrar espacio.
-- Los archivos quedan cifrados con GPG para seguridad.
-- La regla udev permite que al enchufar el USB se ejecute el backup sin que intervengas.
-- Limpia backups viejos para no saturar el dispositivo.
-- La restauración valida que el backup esté íntegro.
-- Actualiza el script con git para mantenerlo al día.
-
----
-
-## 🔐 Seguridad y buenas prácticas
-
-- Usá siempre claves GPG seguras y protegidas.
-- No compartas la clave privada del cifrado.
-- Mantené el USB en un lugar seguro.
-- Verificá el espacio libre antes de lanzar backups.
-- Probá la restauración periódicamente para asegurar la integridad.
-- Usá usuarios con permisos mínimos necesarios para correr el script.
-- Actualizá regularmente el script para tener mejoras y parches.
+| Parámetro        | Descripción                                               |
+|------------------|-----------------------------------------------------------|
+| `-s`             | Setup del sistema y regla udev                            |
+| `-b`             | Ejecuta el backup                                         |
+| `-r`             | Restaura el último backup                                 |
+| `-u UUID`        | UUID del dispositivo USB                                  |
+| `-m MOUNTPOINT`  | Ruta donde montar el USB (default: /mnt/backup_usb)       |
+| `-n`             | Activa notificaciones con `notify-send`                   |
+| `--git-update`   | Actualiza el script desde GitHub                          |
+| `--git-validate` | Valida si hay nueva versión disponible en el repositorio  |
 
 ---
 
-## 📄 Licencia
+## 🛡️ Seguridad
 
-Este proyecto está bajo la licencia **MIT**.
+- Se genera automáticamente un par de claves GPG.
+- La clave privada nunca se expone ni se copia fuera del sistema.
+- El backup está comprimido y cifrado.
+- La clave pública queda disponible junto al script para restauraciones remotas.
 
-```text
-Copyright (c) 2025 Facundo Ponce - INSYCOM.com.ar
+---
 
+## 🎨 Imágenes
+
+![Ejecución del backup](https://raw.githubusercontent.com/tuusuario/backup-system/main/images/backup.png)
+![Restauración](https://raw.githubusercontent.com/tuusuario/backup-system/main/images/restore.png)
+
+---
+
+## 🧠 Buenas prácticas
+
+- No pierdas tu clave privada.
+- Hacé pruebas de restauración regularmente.
+- Usá un USB exclusivamente para este propósito.
+- Usá cron para backups periódicos si no usás Udev.
+
+---
+
+## 📝 Licencia
+
+MIT License
+
+```
+Copyright (c) 2025 Facundo Ponce (INSYCOM.com.ar)
 Email: fponce@insycom.com.ar
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-[...]
 ```
 
 ---
 
-## Contacto
+## ❤️ Contribuciones
 
-Facundo Ponce  
-INSYCOM.com.ar  
-Email: fponce@insycom.com.ar  
-
----
-
-¡Cualquier duda o mejora, tirame un mensaje!
-
----
-
-*Backup your stuff, mate. No hay excusas para perder datos.*
-
----
+Pull requests, issues o sugerencias son siempre bienvenidas.
